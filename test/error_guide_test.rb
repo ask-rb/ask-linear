@@ -21,9 +21,22 @@ class ErrorGuideTest < Minitest::Test
     end
   end
 
+  def test_status_code_descriptions_are_helpful
+    descriptions = Ask::Linear::Errors::STATUS_CODES
+    assert_match(/OK/, descriptions[200])
+    assert_match(/malformed/, descriptions[400])
+    assert_match(/Unauthorized/, descriptions[401])
+    assert_match(/Forbidden/, descriptions[403])
+    assert_match(/Not Found/, descriptions[404])
+    assert_match(/Validation/, descriptions[422])
+    assert_match(/Rate limit/, descriptions[429])
+    assert_match(/Server Error/, descriptions[500])
+    assert_match(/Unavailable/, descriptions[503])
+  end
+
   def test_status_code_description_returns_string
-    desc = Ask::Linear::Errors.status_code_description(401)
-    assert_match(/Unauthorized/, desc)
+    desc = Ask::Linear::Errors.status_code_description(404)
+    assert_match(/Not Found/, desc)
   end
 
   def test_status_code_description_returns_nil_for_unknown
@@ -57,8 +70,24 @@ class ErrorGuideTest < Minitest::Test
   end
 
   def test_error_messages_are_helpful
-    error = Ask::Linear::Errors.for("AUTHENTICATION_ERROR")
-    assert_includes error[:action], "settings/api"
+    auth_error = Ask::Linear::Errors.for("AUTHENTICATION_ERROR")
+    assert_includes auth_error[:action], "settings/api"
+
+    rate_error = Ask::Linear::Errors.for("RATE_LIMITED")
+    assert_includes rate_error[:action], "100 requests"
+
+    not_found = Ask::Linear::Errors.for("NOT_FOUND")
+    assert_includes not_found[:message], "could not be found"
+
+    forbidden = Ask::Linear::Errors.for("FORBIDDEN")
+    assert_includes forbidden[:message], "does not have permission"
+  end
+
+  def test_for_all_error_codes_have_message_and_action
+    Ask::Linear::Errors::ERRORS.each do |code, guidance|
+      assert guidance.key?(:message), "#{code} missing :message"
+      assert guidance.key?(:action), "#{code} missing :action"
+    end
   end
 
   def test_pagination_info_is_defined
@@ -67,5 +96,11 @@ class ErrorGuideTest < Minitest::Test
     assert Ask::Linear::Errors::PAGINATION.key?(:nodes)
     assert Ask::Linear::Errors::PAGINATION.key?(:page_info)
     assert Ask::Linear::Errors::PAGINATION.key?(:example)
+  end
+
+  def test_pagination_values_are_strings
+    Ask::Linear::Errors::PAGINATION.each_value do |value|
+      assert_kind_of String, value
+    end
   end
 end

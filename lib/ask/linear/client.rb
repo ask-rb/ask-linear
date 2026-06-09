@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "faraday"
+require "faraday/retry"
 require "ask/auth"
 
 module Ask
@@ -14,6 +15,7 @@ module Ask
     # Configuration:
     # - +read_timeout+: +30+ seconds
     # - +open_timeout+: +10+ seconds
+    # - +retry+: up to 3 retries on 429 (rate-limit) and 5xx (server) errors
     #
     # @example
     #   client = Ask::Linear.client
@@ -43,6 +45,11 @@ module Ask
         @api_key = api_key
         @connection = Faraday.new(url: BASE_URL) do |f|
           f.request :json
+          f.request :retry, max: 3,
+                            interval: 1.0,
+                            max_interval: 10.0,
+                            backoff_factor: 2.0,
+                            retry_statuses: [429, 500, 502, 503]
           f.response :json
           f.response :raise_error
           f.options.read_timeout = 30
