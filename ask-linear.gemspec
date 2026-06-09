@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   spec.email = ["kaka@myrrlabs.com"]
 
   spec.summary = "Linear service context for the ask-rb ecosystem"
-  spec.description = "Provides authenticated client helper, context metadata, and error guide for AI agents."
+  spec.description = "Provides authenticated GraphQL client, context metadata, and error guide for AI agents working with the Linear API."
   spec.homepage = "https://github.com/ask-rb/ask-linear"
   spec.license = "MIT"
 
@@ -17,6 +17,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "ask-auth", "~> 0.1"
+  spec.add_dependency "faraday", "~> 2.0"
 
   spec.add_development_dependency "minitest", "~> 5.25"
   spec.add_development_dependency "mocha", "~> 3.1"
