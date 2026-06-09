@@ -20,6 +20,9 @@ module Ask
     # Gem name for the Linear API client.
     GEM_NAME = "faraday"
 
+    # Required gem version constraint.
+    GEM_VERSION = "~> 2.0"
+
     # URL for Faraday Ruby library documentation.
     GEM_DOCS = "https://lostisland.github.io/faraday"
 

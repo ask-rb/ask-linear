@@ -27,6 +27,10 @@ class ContextTest < Minitest::Test
     assert_equal "faraday", Ask::Linear::GEM_NAME
   end
 
+  def test_gem_version_is_defined
+    assert_match(/~> 2\.0/, Ask::Linear::GEM_VERSION)
+  end
+
   def test_gem_docs_is_defined
     assert Ask::Linear::GEM_DOCS.start_with?("https://lostisland.github.io/faraday")
   end

@@ -43,11 +43,11 @@ class ClientTest < Minitest::Test
       config.providers = [->(name, user: nil) { api_key if name == "linear_api_key" }]
     end
 
-    response = Faraday::Response.new(status: 401, response_headers: {}, body: "")
-    error = Faraday::UnauthorizedError.new(response)
-    Ask::Linear::Client.any_instance.stubs(:query).raises(error)
+    client = Ask::Linear.client
+    error_response = { status: 401, headers: {}, body: { errors: [{ message: "Unauthorized" }] } }
+    Ask::Linear::Client.any_instance.stubs(:query).raises(Faraday::UnauthorizedError.new(error_response))
 
-    assert_raises(Ask::Auth::InvalidCredential) { Ask::Linear.client.query("query { teams { nodes { id } } }") }
+    assert_raises(Ask::Auth::InvalidCredential) { client.query("{ invalid }") }
   end
 
   def test_client_query_returns_data
@@ -57,8 +57,8 @@ class ClientTest < Minitest::Test
     end
 
     client = Ask::Linear.client
-    response = { "data" => { "teams" => { "nodes" => [{ "id" => "team-1", "name" => "Engineering" }] } } }
-    Ask::Linear::Client.any_instance.stubs(:query).returns(response)
+    response_data = { "data" => { "teams" => { "nodes" => [{ "id" => "team-1", "name" => "Engineering" }] } } }
+    Ask::Linear::Client.any_instance.stubs(:query).returns(response_data)
 
     result = client.query("query { teams { nodes { id name } } }")
     assert_equal "Engineering", result["data"]["teams"]["nodes"][0]["name"]
