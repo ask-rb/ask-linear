@@ -2,11 +2,11 @@ require_relative "lib/ask/linear/version"
 
 Gem::Specification.new do |spec|
   spec.name = "ask-linear"
-  spec.version = Ask::linear::VERSION
+  spec.version = Ask::Linear::VERSION
   spec.authors = ["Kaka Ruto"]
   spec.email = ["kaka@myrrlabs.com"]
 
-  spec.summary = "linear service context for the ask-rb ecosystem"
+  spec.summary = "Linear service context for the ask-rb ecosystem"
   spec.description = "Provides authenticated client helper, context metadata, and error guide for AI agents."
   spec.homepage = "https://github.com/ask-rb/ask-linear"
   spec.license = "MIT"
