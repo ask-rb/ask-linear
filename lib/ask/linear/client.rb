@@ -22,7 +22,9 @@ module Ask
     # @return [Ask::Linear::Client] an authenticated GraphQL client
     # @raise [Ask::Auth::MissingCredential] if no Linear API key is configured
     # @raise [Ask::Auth::InvalidCredential] if the API key is rejected (401)
+    # @raise [ArgumentError] if query arguments are invalid
     # @raise [RuntimeError] if Linear returns GraphQL error messages
+    # @raise [Faraday::Error] if the HTTP request fails
     def self.client
       api_key = Ask::Auth.resolve(:linear_api_key)
       ClientProxy.new(Client.new(api_key))
@@ -54,9 +56,18 @@ module Ask
       # @param gql [String] GraphQL query or mutation string
       # @param variables [Hash] Variables to interpolate into the query (default: {})
       # @return [Hash] Parsed response body from the Linear API
+      # @raise [ArgumentError] if +gql+ is not a String or +variables+ is not a Hash
       # @raise [RuntimeError] if the API returns errors in the response body
       # @raise [Faraday::Error] if the HTTP request fails
       def query(gql, variables = {})
+        unless gql.is_a?(::String)
+          raise ::ArgumentError, "gql must be a String, got #{gql.class}"
+        end
+
+        unless variables.is_a?(::Hash)
+          raise ::ArgumentError, "variables must be a Hash, got #{variables.class}"
+        end
+
         response = @connection.post do |req|
           req.headers["Authorization"] = @api_key
           req.body = { query: gql, variables: variables }

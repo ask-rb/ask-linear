@@ -50,6 +50,19 @@ class ClientTest < Minitest::Test
     assert_raises(Ask::Auth::InvalidCredential) { client.query("{ invalid }") }
   end
 
+  def test_client_re_raises_non_401_errors
+    api_key = "valid_key"
+    Ask::Auth.configure do |config|
+      config.providers = [->(name, user: nil) { api_key if name == "linear_api_key" }]
+    end
+
+    client = Ask::Linear.client
+    error_response = { status: 403, headers: {}, body: { errors: [{ message: "Forbidden" }] } }
+    Ask::Linear::Client.any_instance.stubs(:query).raises(Faraday::ForbiddenError.new(error_response))
+
+    assert_raises(Faraday::ForbiddenError) { client.query("{ valid }") }
+  end
+
   def test_client_query_returns_data
     api_key = "lin_api_valid"
     Ask::Auth.configure do |config|
@@ -62,6 +75,43 @@ class ClientTest < Minitest::Test
 
     result = client.query("query { teams { nodes { id name } } }")
     assert_equal "Engineering", result["data"]["teams"]["nodes"][0]["name"]
+  end
+
+  def test_client_raises_on_graphql_errors
+    api_key = "lin_api_valid"
+    Ask::Auth.configure do |config|
+      config.providers = [->(name, user: nil) { api_key if name == "linear_api_key" }]
+    end
+
+    Ask::Linear::Client.any_instance.stubs(:query).raises(
+      RuntimeError, "Linear API error: Field 'foo' doesn't exist on type 'Query'"
+    )
+
+    client = Ask::Linear.client
+    error = assert_raises(RuntimeError) { client.query("{ invalid }") }
+    assert_match(/Linear API error/, error.message)
+  end
+
+  def test_client_rejects_non_string_gql
+    api_key = "lin_api_valid"
+    Ask::Auth.configure do |config|
+      config.providers = [->(name, user: nil) { api_key if name == "linear_api_key" }]
+    end
+
+    client = Ask::Linear.client
+    error = assert_raises(ArgumentError) { client.query(nil) }
+    assert_match(/gql must be a String/, error.message)
+  end
+
+  def test_client_rejects_non_hash_variables
+    api_key = "lin_api_valid"
+    Ask::Auth.configure do |config|
+      config.providers = [->(name, user: nil) { api_key if name == "linear_api_key" }]
+    end
+
+    client = Ask::Linear.client
+    error = assert_raises(ArgumentError) { client.query("{ teams }", "not_a_hash") }
+    assert_match(/variables must be a Hash/, error.message)
   end
 
   def test_client_missing_credential_error_message

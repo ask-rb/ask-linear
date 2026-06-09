@@ -3,3 +3,5 @@
 Gemfile.lock
 vendor/
 tmp/
+coverage/
+ask-linear-*.gem
