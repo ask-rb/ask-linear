@@ -2,7 +2,7 @@ source "https://rubygems.org"
 
 gemspec
 
-gem "ask-auth", path: "../ask-auth"
+gem "ask-auth", "~> 0.1"
 
 group :test do
   gem "minitest", "~> 5.25"
