@@ -9,14 +9,14 @@ class ClientTest < Minitest::Test
 
   def build_test_client(api_key)
     Ask::Auth.configure do |config|
-      config.providers = [->(name, user: nil) { api_key if name == "linear_api_key" }]
+      config.providers = [->(name, user: nil) { api_key if name.to_s == "linear_api_key" }]
     end
     Ask::Linear.client
   end
 
   def raw_client(api_key)
     Ask::Auth.configure do |config|
-      config.providers = [->(name, user: nil) { api_key if name == "linear_api_key" }]
+      config.providers = [->(name, user: nil) { api_key if name.to_s == "linear_api_key" }]
     end
     Ask::Linear::Client.new(api_key)
   end
