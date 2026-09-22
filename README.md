@@ -2,6 +2,13 @@
 
 [![Gem Version](https://badge.fury.io/rb/ask-linear.svg)](https://badge.fury.io/rb/ask-linear)
 
+> **⚠️ DEPRECATED:** This gem is deprecated in favor of Linear's official MCP
+> server. Use [Linear's official MCP server](https://linear.app/docs/mcp)
+> (remote endpoint: `https://mcp.linear.app/mcp`) instead. Existing gem
+> installations may continue to work, but this repository will receive no
+> further feature development. See the official MCP documentation for setup
+> instructions and capabilities.
+
 Linear service context for AI agents in the ask-rb ecosystem. It provides an
 authenticated GraphQL client for the Linear API, metadata constants for
 system prompts, and a structured error guide for common Linear API issues.

@@ -1,3 +1,13 @@
+## 2026-09-22
+
+### Deprecated
+
+- `ask-linear` is deprecated in favor of Linear's official MCP server:
+  https://linear.app/docs/mcp (remote endpoint: `https://mcp.linear.app/mcp`).
+  Existing installations may continue to work, but this repository will
+  receive no further feature development. See the official MCP source for
+  setup and capabilities.
+
 ## [0.1.2] - 2026-06-25
 
 ### Changed
